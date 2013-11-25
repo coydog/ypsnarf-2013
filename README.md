@@ -5,11 +5,11 @@ ypsnarf version published in Phrack #46, updated for modern systems.
 
 To compile on OpenIndiana (and hopefully other Solaris's), try
 
-    cc  -o ypsnarf ypsnarf.c -lnsl -lrpcscv
+    cc  -o ypsnarf ypsnarf.c -lnsl -lrpcsvc
 
 On Linux, try 
 
-    cc -D__LINUX__  -o ypsnarf ypsnarf.c -lnsl -lrpcscv
+    cc -D__LINUX__  -o ypsnarf ypsnarf.c -lnsl -lrpcsvb
 
 very untested. wow. such code.
 

@@ -207,11 +207,7 @@ char *server, *domain, *mapname;
  char *reqp;
  bool_t yesno;
  u_long calltype;
-#ifdef __LINUX__
- bool (*xdrproc_t)();
-#else
  bool (*xdr_proc)();
-#endif
  extern void timeout();
  enum clnt_stat errcode;
  struct ypreq_key keyreq;
@@ -277,11 +273,7 @@ char *server, *domain, *mapname;
 
  answer.status = TRUE;
  calltype = YPPROC_FIRST;
-#ifdef __LINUX__
- xdrproc_t = xdr_ypreq_nokey;
-#else
  xdr_proc = xdr_ypreq_nokey;
-#endif
 
  while (answer.status == TRUE) {
   bzero((caddr_t) &answer, sizeof(struct ypresp_key_val));
@@ -289,11 +281,7 @@ char *server, *domain, *mapname;
   signal(SIGALRM, timeout);
   alarm(YPSNARF_TIMEOUT2);
 
-#ifdef __LINUX__
-  errcode = callrpc(server, YPPROG, YPVERS, calltype, xdrproc_t,
-#else
   errcode = callrpc(server, YPPROG, YPVERS, calltype, xdr_proc,
-#endif
       reqp, xdr_ypresp_key_val, &answer);
 
   alarm(0);
@@ -320,11 +308,7 @@ char *server, *domain, *mapname;
    */
   calltype = YPPROC_NEXT;
   reqp = (caddr_t) &keyreq;
-#ifdef __LINUX__
-  xdrproc_t = xdr_ypreq_key;
-#else
   xdr_proc = xdr_ypreq_key;
-#endif
 
 #ifdef __LINUX__
   if (keyreq.keydat.keydat_val)
