@@ -23,10 +23,10 @@ Changed this to bp_address_u.
 
 Linux has different types with different names for ypresp_key_val members.
 Solaris used a generic "datum" type with length and pointer to data. Linux
-uses different types for differnet members. Members are ordered differently
+uses different types for different members. Members are ordered differently
 too. So the types are incompatible, but more or less equivalent. lol.
 
-This program used bool, which really needs <stdbool.h> in C99. Added for
+This program used bool, which really needs `<stdbool.h>` in C99. Added for
 Linux (Sun Studio seems to have supported bool as an extension).
 
 Also Linux uses xdrproc_t instead of xdr_proc for. Look equivalent.
