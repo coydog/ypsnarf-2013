@@ -66,6 +66,11 @@
 #include <netdb.h>
 #include <stdio.h>
 
+#ifdef __LINUX__
+#include <rpc/xdr.h>
+#include <stdbool.h>
+#endif
+
 #define BOOTPARAM_MAXDOMAINLEN 32 /* from rpc.bootparamd  */
 #define YPSNARF_TIMEOUT1 15 /* timeout for initial request */
 #define YPSNARF_TIMEOUT2 30 /* timeout during map transfer */
@@ -202,7 +207,11 @@ char *server, *domain, *mapname;
  char *reqp;
  bool_t yesno;
  u_long calltype;
+#ifdef __LINUX__
+ bool (*xdrproc_t)();
+#else
  bool (*xdr_proc)();
+#endif
  extern void timeout();
  enum clnt_stat errcode;
  struct ypreq_key keyreq;
@@ -260,11 +269,19 @@ char *server, *domain, *mapname;
  keyreq.domain = nokeyreq.domain = domain;
  keyreq.map = nokeyreq.map = mapname;
  reqp = (caddr_t) &nokeyreq;
+#ifdef __LINUX__
+ keyreq.keydat.keydat_val = NULL;
+#else
  keyreq.keydat.dptr = NULL;
+#endif
 
  answer.status = TRUE;
  calltype = YPPROC_FIRST;
+#ifdef __LINUX__
+ xdrproc_t = xdr_ypreq_nokey;
+#else
  xdr_proc = xdr_ypreq_nokey;
+#endif
 
  while (answer.status == TRUE) {
   bzero((caddr_t) &answer, sizeof(struct ypresp_key_val));
@@ -272,7 +289,11 @@ char *server, *domain, *mapname;
   signal(SIGALRM, timeout);
   alarm(YPSNARF_TIMEOUT2);
 
+#ifdef __LINUX__
+  errcode = callrpc(server, YPPROG, YPVERS, calltype, xdrproc_t,
+#else
   errcode = callrpc(server, YPPROG, YPVERS, calltype, xdr_proc,
+#endif
       reqp, xdr_ypresp_key_val, &answer);
 
   alarm(0);
@@ -284,8 +305,13 @@ char *server, *domain, *mapname;
    * Got something; print it.
    */
   if (answer.status == TRUE) {
+#ifdef __LINUX__
+   printf("%.*s\n", answer.valdat.valdat_len,
+          answer.valdat.valdat_val);
+#else
    printf("%.*s\n", answer.valdat.dsize,
           answer.valdat.dptr);
+#endif
   }
 
   /*
@@ -294,15 +320,29 @@ char *server, *domain, *mapname;
    */
   calltype = YPPROC_NEXT;
   reqp = (caddr_t) &keyreq;
+#ifdef __LINUX__
+  xdrproc_t = xdr_ypreq_key;
+#else
   xdr_proc = xdr_ypreq_key;
+#endif
 
+#ifdef __LINUX__
+  if (keyreq.keydat.keydat_val)
+   free(keyreq.keydat.keydat_val);
+#else
   if (keyreq.keydat.dptr)
    free(keyreq.keydat.dptr);
+#endif
 
   keyreq.keydat = answer.keydat;
 
+#ifdef __LINUX__
+  if (answer.valdat.valdat_val)
+   free(answer.valdat.valdat_val);
+#else
   if (answer.valdat.dptr)
    free(answer.valdat.dptr);
+#endif
  }
 }
 
