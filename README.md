@@ -9,7 +9,7 @@ To compile on OpenIndiana (and hopefully other Solaris's), try
 
 On Linux, try 
 
-    cc -D__LINUX__  -o ypsnarf ypsnarf.c -lnsl -lrpcsvb
+    cc -D__LINUX__  -o ypsnarf ypsnarf.c -lnsl -lrpcsvc
 
 very untested. wow. such code.
 
