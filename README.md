@@ -11,7 +11,8 @@ On Linux, try
 
     cc -D__LINUX__  -o ypsnarf ypsnarf.c -lnsl -lrpcsvc
 
-very untested. wow. such code.
+I've verified that RPC requests are made without the program crashing, but I'd
+welcome problem reports or feedback from anyone who uses this successfully.
 
 TODO: The BSD's. Will probably need much more work; the rpc bootparam stuff looks
 stubby on the BSD's. The man pages aren't a lot of help for this stuff it seems.
@@ -29,4 +30,4 @@ too. So the types are incompatible, but more or less equivalent. lol.
 This program used bool, which really needs `<stdbool.h>` in C99. Added for
 Linux (Sun Studio seems to have supported bool as an extension).
 
-Also Linux uses xdrproc_t instead of xdr_proc for. Look equivalent.
+Also Linux uses xdrproc_t instead of xdr_proc. Look equivalent.
